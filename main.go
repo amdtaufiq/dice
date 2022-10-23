@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -65,15 +66,15 @@ func (p *Player) getPosition() (position int) {
 
 func (p *Player) addPoint() {
 	p.Point++
-	fmt.Print("Player => ", p.Name)
-	fmt.Println(" & Point => ", p.Point)
+	// fmt.Print("Player => ", p.Name)
+	// fmt.Println(" & Point => ", p.Point)
 }
 
 func (p *Player) getPoint() (point int) {
 	// fmt.Println(p.Name)
 	point = p.Point
-	fmt.Print("Player => ", p.Name)
-	fmt.Println(" & Point => ", p.Point)
+	// fmt.Print("Player => ", p.Name)
+	// fmt.Println(" & Point => ", p.Point)
 	return
 }
 
@@ -86,7 +87,7 @@ func (p *Player) play() {
 	}
 }
 
-func (p *Player) removeDice(index, player int) {
+func (p *Player) removeDice(index int) {
 	// p.Dices = append(p.Dices[:index], p.Dices[index+1:]...)
 	p.Dices[index].Value = 0
 	// fmt.Printf("player => %d index => %d", player+1, index)
@@ -128,17 +129,15 @@ func (g *Game) displayRound() Game {
 
 func (g *Game) displayTopSideDice(title string) Game {
 
-	// fmt.Printf("%s:\n", title)
+	fmt.Printf("%s:\n", title)
 	for _, player := range g.Players {
-		// 	fmt.Printf("\tPemain #%s(%d):", player.getName(), player.getPoint())
-		// 	diceToSide := ""
-		// 	for _, dice := range player.getDices() {
-		// 		diceToSide += fmt.Sprintf("%d, ", dice.getValue())
-		// 	}
+		fmt.Printf("\tPemain #%s(%d):", player.getName(), player.getPoint())
+		diceToSide := ""
+		for _, dice := range player.getDices() {
+			diceToSide += fmt.Sprintf("%d, ", dice.getValue())
+		}
 
-		// 	fmt.Printf("%s\n", strings.TrimRight(diceToSide, ", "))
-		fmt.Println("Get Point")
-		player.getPoint()
+		fmt.Printf("%s\n", strings.TrimRight(diceToSide, ", "))
 	}
 	return *g
 }
@@ -175,15 +174,12 @@ func (g *Game) start() {
 		g.displayRound()
 		g.displayTopSideDice("Lempar Dadu")
 
-		for i, player := range g.Players {
-			// fmt.Println(player)
+		for _, player := range g.Players {
 			// var tempDiceArray []Dice
 			for j, dice := range player.getDices() {
-				// fmt.Print(dice)
 				if dice.getValue() == REMOVED_WHEN_DICE_TOP {
-					// fmt.Println(" => Masuk")
-					fmt.Println("Add Point")
-					player.removeDice(j, i)
+					player.addPoint()
+					player.removeDice(j)
 				}
 
 				// if dice.getValue() == MOVE_WHEN_DICE_TOP {
@@ -206,7 +202,12 @@ func (g *Game) start() {
 
 			// 	diceCarryForward = [][]Dice{}
 			// }
+
 		}
+
+		fmt.Println("PLAYER ", g.Players[0].Name, " POINT => ", g.Players[0].getPoint())
+		fmt.Println("PLAYER ", g.Players[1].Name, " POINT => ", g.Players[1].getPoint())
+		fmt.Println("PLAYER ", g.Players[2].Name, " POINT => ", g.Players[2].getPoint())
 
 		g.displayTopSideDice("Setelah Evaluasi")
 
