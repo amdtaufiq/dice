@@ -8,10 +8,11 @@ import (
 )
 
 func main() {
+	var player Player
+	player.addPoint()
 	var game Game
 	game.Game(3, 4)
 	game.start()
-
 }
 
 type Dice struct {
@@ -22,14 +23,6 @@ func (d *Dice) getValue() (value int) {
 	value = d.Value
 	return
 }
-
-// func (d *Dice) roll() (value int) {
-// 	rand.Seed(time.Now().UTC().UnixNano())
-// 	d.Value = rand.Intn(6) + 1
-// 	value = d.Value
-// 	fmt.Printf("value: %v\n", value)
-// 	return
-// }
 
 type Player struct {
 	Dices    []Dice
@@ -66,15 +59,10 @@ func (p *Player) getPosition() (position int) {
 
 func (p *Player) addPoint() {
 	p.Point++
-	// fmt.Print("Player => ", p.Name)
-	// fmt.Println(" & Point => ", p.Point)
 }
 
 func (p *Player) getPoint() (point int) {
-	// fmt.Println(p.Name)
 	point = p.Point
-	// fmt.Print("Player => ", p.Name)
-	// fmt.Println(" & Point => ", p.Point)
 	return
 }
 
@@ -90,8 +78,6 @@ func (p *Player) play() {
 func (p *Player) removeDice(index int) {
 	// p.Dices = append(p.Dices[:index], p.Dices[index+1:]...)
 	p.Dices[index].Value = 0
-	// fmt.Printf("player => %d index => %d", player+1, index)
-	// fmt.Println()
 }
 
 func (p *Player) addDice(dice Dice) {
@@ -161,11 +147,11 @@ func (g *Game) getWinner() (winner Player) {
 
 func (g *Game) start() {
 	fmt.Printf("Pemain = %d, Dadu = %d \n", g.NumberOfPlayer, g.NumberOfDicePerPlayer)
-	index := 0
-	for index < 2 {
-		index++
+	// index := 0
+	for true {
+		// index++
 		g.Round++
-		// var diceCarryForward [][]Dice
+		var diceCarryForward [][]Dice
 
 		for _, player := range g.Players {
 			player.play()
@@ -174,40 +160,41 @@ func (g *Game) start() {
 		g.displayRound()
 		g.displayTopSideDice("Lempar Dadu")
 
-		for _, player := range g.Players {
-			// var tempDiceArray []Dice
+		for i, player := range g.Players {
+			var tempDiceArray []Dice
 			for j, dice := range player.getDices() {
 				if dice.getValue() == REMOVED_WHEN_DICE_TOP {
 					player.addPoint()
 					player.removeDice(j)
 				}
 
-				// if dice.getValue() == MOVE_WHEN_DICE_TOP {
-				// 	if player.getPosition() == g.NumberOfPlayer-1 {
-				// 		g.Players[0].addDice(dice)
-				// 		player.removeDice(j)
-				// 	} else {
-				// 		tempDiceArray = append(tempDiceArray, dice)
-				// 		player.removeDice(j)
-				// 	}
-				// }
+				if dice.getValue() == MOVE_WHEN_DICE_TOP {
+					if player.getPosition() == g.NumberOfPlayer-1 {
+						g.Players[0].addDice(dice)
+						player.removeDice(j)
+					} else {
+						tempDiceArray = append(tempDiceArray, dice)
+						player.removeDice(j)
+					}
+				}
 			}
 
-			// diceCarryForward = append(diceCarryForward, tempDiceArray)
+			diceCarryForward = append(diceCarryForward, tempDiceArray)
 
-			// if diceCarryForward[i] != nil && len(diceCarryForward[i]) > 0 {
-			// 	for _, dice := range diceCarryForward[i] {
-			// 		player.addDice(dice)
-			// 	}
+			if diceCarryForward[i] != nil && len(diceCarryForward[i]) > 0 {
+				for _, dice := range diceCarryForward[i] {
+					player.addDice(dice)
+				}
 
-			// 	diceCarryForward = [][]Dice{}
-			// }
-
+				diceCarryForward = [][]Dice{}
+			}
+			// fmt.Println("PLAYER ", player.Name, " POINT => ", player.getPoint())
 		}
 
-		fmt.Println("PLAYER ", g.Players[0].Name, " POINT => ", g.Players[0].getPoint())
-		fmt.Println("PLAYER ", g.Players[1].Name, " POINT => ", g.Players[1].getPoint())
-		fmt.Println("PLAYER ", g.Players[2].Name, " POINT => ", g.Players[2].getPoint())
+		// g.Players[0].addPoint()
+		// fmt.Println("PLAYER ", g.Players[0].Name, " POINT => ", g.Players[0].getPoint())
+		// fmt.Println("PLAYER ", g.Players[1].Name, " POINT => ", g.Players[1].getPoint())
+		// fmt.Println("PLAYER ", g.Players[2].Name, " POINT => ", g.Players[2].getPoint())
 
 		g.displayTopSideDice("Setelah Evaluasi")
 
